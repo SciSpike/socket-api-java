@@ -10,8 +10,9 @@ import java.util.TimerTask;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class SocketApi {
+public class Socket {
 
+  private static final int bo_min = 100;
   public static int hb_interval = 30000;
   public static int bo_max = 10 * 1000;
 
@@ -42,7 +43,7 @@ public class SocketApi {
     return eventEmitter;
   }
 
-  public SocketApi(final String urlPrefix, final AuthFunction authFunction,
+  public Socket(final String urlPrefix, final AuthFunction authFunction,
       final Callback callback) {
     this.urlPrefix = urlPrefix;
     this.authFunction = authFunction;
@@ -72,7 +73,7 @@ public class SocketApi {
   }
 
   public void resetBackoff() {
-    backOff.put(urlPrefix, 100);
+    backOff.put(urlPrefix, bo_min);
   }
 
   public void cancelHeartbeat() {
@@ -164,7 +165,7 @@ public class SocketApi {
           void onData(Object data) {
             JSONObject msg = (JSONObject) data;
             try {
-              globalEmitter.emit(msg.getString("event"), msg.getString("data"));
+              globalEmitter.emit(msg.getString("event"), msg.get("data").toString());
               getConnectEmitter().emit(msg.getString("event"),
                   msg.get("data").toString());
             } catch (JSONException e) {
