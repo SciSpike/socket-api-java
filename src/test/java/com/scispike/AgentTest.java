@@ -8,6 +8,14 @@ import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
 
+/*
+ * Prior to running this tests you should:
+ * sudo npm install -g conversation 
+ * conversation create test
+ * cd test
+ * npm run gen-src
+ * npm start
+ */
 public class AgentTest {
   @Test
   public void testConnect(){
