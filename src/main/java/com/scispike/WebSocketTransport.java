@@ -3,6 +3,7 @@ package com.scispike;
 import java.net.URI;
 
 import org.java_websocket.client.WebSocketClient;
+import org.java_websocket.drafts.Draft_17;
 import org.java_websocket.handshake.ServerHandshake;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -10,7 +11,7 @@ import org.json.JSONObject;
 public abstract class WebSocketTransport extends WebSocketClient {
 
   public WebSocketTransport(URI serverURI) {
-    super(serverURI);
+    super(serverURI, new Draft_17());
   }
 
   public static int CONNECTING = 0;
@@ -34,7 +35,7 @@ public abstract class WebSocketTransport extends WebSocketClient {
         payload = sData != null ? new JSONArray(sData) : new JSONArray();
         int i = 0;
         while (i < payload.length()) {
-          Object o = payload.get(i);
+          Object o = payload.get(i++);
           JSONObject d = new JSONObject((String)o);
           this._dispatchMessage(d);
         }
@@ -94,7 +95,6 @@ public abstract class WebSocketTransport extends WebSocketClient {
 
   @Override
   public void onOpen(ServerHandshake arg0) {
-    System.out.print(arg0.toString());
   }
   
   abstract void onHeartbeat();

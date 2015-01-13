@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import org.java_websocket.WebSocket.READYSTATE;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -197,23 +199,34 @@ public class Socket {
     });
   }
 
+  public boolean isConnected() {
+    SockJsClient sockJsClient = globalSockets.get(urlPrefix);
+    return sockJsClient.getReadyState() == READYSTATE.OPEN;
+  }
+
   public void send(String msg, Callback<String, String> cb) {
     SockJsClient sockJsClient = globalSockets.get(urlPrefix);
     if (sockJsClient != null) {
-      sockJsClient.send(msg);
-      cb.call(null);
-    } else {
+      JSONArray j = new JSONArray();
+      j.put(msg);
+      sockJsClient.send(j.toString());
+      if (cb != null) {
+        cb.call(null);
+      }
+    } else if (cb != null) {
       cb.call("Not connected");
     }
-
   }
 
   public EventEmitter<String> connect() {
     Boolean connected = globalConnections.get(urlPrefix);
     if (connected == null || !connected) {
       doConnect();
-    } else if (callback != null) {
-      callback.call(null);
+    } else {
+      getConnectEmitter().emit("connect");
+      if (callback != null) {
+        callback.call(null);
+      }
     }
     return getConnectEmitter();
   }
