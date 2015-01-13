@@ -21,23 +21,26 @@ public abstract class SockJsClient extends WebSocketTransport {
     }
 
     if (parsed.getPath().equals("/")) {
-      parsed = parse(parsed.getProtocol(), parsed.getHost(), parsed.getPort(),
+      parsed = parseUrl(parsed.getProtocol(), parsed.getHost(), parsed.getPort(),
           "");
     }
 
     long serverId = Math.round(Math.random() * 999);
     UUID sessionId = UUID.randomUUID();
 
-    try {
       return parse(parsed.getProtocol().equals("https") ? "wss" : "ws",
           parsed.getHost(), parsed.getPort(),
-          parsed.getPath() + "/" + serverId + "/" + sessionId).toURI();
-    } catch (URISyntaxException e) {
-      throw new RuntimeException(e);
-    }
+          parsed.getPath() + "/" + serverId + "/" + sessionId+"/websocket");
   }
 
-  private static URL parse(String protocol, String host, int port, String file) {
+  private static URI parse(String protocol, String host, int port, String file) {
+      try {
+        return new URI(protocol, null,host, port, file,null,null);
+      } catch (URISyntaxException e) {
+        throw new RuntimeException(e);
+      }
+  }
+  private static URL parseUrl(String protocol, String host, int port, String file) {
     try {
       return new URL(protocol, host, port, file);
     } catch (MalformedURLException e) {

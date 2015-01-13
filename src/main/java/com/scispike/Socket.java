@@ -16,55 +16,44 @@ public class Socket {
   public static int hb_interval = 30000;
   public static int bo_max = 10 * 1000;
 
-  public abstract class AuthFunction {
-    abstract void auth(Callback cb);
-  }
-
   final Map<String, Boolean> hb = new Hashtable<String, Boolean>();
   final Map<String, Integer> backOff = new Hashtable<String, Integer>();
   static final Map<String, SockJsClient> globalSockets = new Hashtable<String, SockJsClient>();
   static final Map<String, Boolean> globalConnections = new Hashtable<String, Boolean>();
-  static final Map<String, EventEmitter> globalEventEmitters = new Hashtable<String, EventEmitter>();
+  static final Map<String, EventEmitter<String>> globalEventEmitters = new Hashtable<String, EventEmitter<String>>();
   static final Map<String, TimerTask> globalTasks = new Hashtable<String, TimerTask>();
   final Timer timer = new Timer(true);
 
   final String urlPrefix;
   final AuthFunction authFunction;
-  final Callback callback;
-  final EventEmitter globalEmitter;
-  private final EventEmitter connectEmitter;
+  final Callback<String, String> callback;
+  final EventEmitter<String> globalEmitter;
+  private final EventEmitter<String> connectEmitter;
 
-  public EventEmitter getEventEmitter() {
-    EventEmitter eventEmitter = globalEventEmitters.get(urlPrefix);
+  public Socket(final String urlPrefix, final AuthFunction authFunction,
+      final Callback<String, String> callback) {
+    this.urlPrefix = urlPrefix;
+    this.authFunction = authFunction;
+    this.callback = callback;
+    this.globalEmitter = getGlobalEventEmitter();
+    connectEmitter = new EventEmitter<String>();
+  }
+
+  EventEmitter<String> getGlobalEventEmitter() {
+    EventEmitter<String> eventEmitter = globalEventEmitters.get(urlPrefix);
     if (eventEmitter == null) {
-      eventEmitter = new EventEmitter();
+      eventEmitter = new EventEmitter<String>();
       globalEventEmitters.put(urlPrefix, eventEmitter);
     }
     return eventEmitter;
   }
 
-  public Socket(final String urlPrefix, final AuthFunction authFunction,
-      final Callback callback) {
-    this.urlPrefix = urlPrefix;
-    this.authFunction = authFunction;
-    this.callback = callback;
-    this.globalEmitter = getEventEmitter();
-    connectEmitter = new EventEmitter();
-  }
-
-  public void disconnect() {
-    SockJsClient socket = globalSockets.get(urlPrefix);
-    globalSockets.remove(urlPrefix);
-    if (socket != null)
-      socket.close();
-  }
-
-  public void doReconnect() {
+  void doReconnect() {
     disconnect();
     doConnect();
   }
 
-  public URL createUrl(String url) {
+  URL createUrl(String url) {
     try {
       return new URL(url);
     } catch (MalformedURLException e) {
@@ -72,11 +61,11 @@ public class Socket {
     }
   }
 
-  public void resetBackoff() {
+  void resetBackoff() {
     backOff.put(urlPrefix, bo_min);
   }
 
-  public void cancelHeartbeat() {
+  void cancelHeartbeat() {
     TimerTask t = globalTasks.get(urlPrefix);
     if (t != null) {
       t.cancel();
@@ -84,7 +73,7 @@ public class Socket {
     }
   }
 
-  public void retryConnect() {
+  void retryConnect() {
     int backoff = backOff.get(urlPrefix);
     backOff.put(urlPrefix, Math.max(bo_max, backoff * backoff));
     cancelHeartbeat();
@@ -98,7 +87,7 @@ public class Socket {
 
   }
 
-  public void resetHeartbeat() {
+  void resetHeartbeat() {
     hb.put(urlPrefix, false);
     cancelHeartbeat();
     TimerTask t = new TimerTask() {
@@ -116,21 +105,21 @@ public class Socket {
 
   }
 
-  public void doConnect() {
+  void doConnect() {
     globalConnections.put(urlPrefix, true);
-    authFunction.auth(new Callback() {
+    authFunction.auth(new Callback<String, String>() {
       @Override
-      void done(String... args) {
+      void call(String error, String... args) {
         final String token = args[0];
         final String sessionId = args[1];
-        final String url = "/ws/" + sessionId + "/token/" + token;
+        final String url = urlPrefix + "/ws/" + sessionId + "/auth/" + token;
         final SockJsClient mySocket = new SockJsClient(createUrl(url)) {
 
           @Override
           public void onError(Exception arg0) {
             cancelHeartbeat();
             disconnect();
-            globalEmitter.emit("error");
+            globalEmitter.emit("error", arg0.getMessage());
           }
 
           @Override
@@ -165,62 +154,78 @@ public class Socket {
           void onData(Object data) {
             JSONObject msg = (JSONObject) data;
             try {
-              globalEmitter.emit(msg.getString("event"), msg.get("data").toString());
-              getConnectEmitter().emit(msg.getString("event"),
-                  msg.get("data").toString());
+              Object d = msg.has("data") ? msg.get("data") : null;
+              String event = msg.getString("event");
+              if (d != null) {
+                globalEmitter.emit(event, d.toString());
+                getConnectEmitter().emit(event, d.toString());
+              } else {
+                globalEmitter.emit(event);
+                getConnectEmitter().emit(event);
+              }
+
             } catch (JSONException e) {
               e.printStackTrace();
             }
           }
         };
-        globalEmitter.once(sessionId + ":connected", new Callback() {
+        globalEmitter.once(sessionId + ":connected", new Event<String>() {
 
           @Override
-          void done(String... args) {
+          void onEmit(String... args) {
             globalSockets.put(urlPrefix, mySocket);
             globalEmitter.emit("connect", args);
             if (callback != null) {
-              callback.done();
+              callback.call(null);
             }
           }
         });
-        globalEmitter.on(sessionId + ":connect", new Callback() {
+        globalEmitter.on("connect", new Event<String>() {
           @Override
-          void done(String... args) {
+          void onEmit(String... args) {
             getConnectEmitter().emit("connect", args);
           }
         });
-        globalEmitter.once("error", new Callback() {
+        globalEmitter.once("error", new Event<String>() {
           @Override
-          void done(String... data) {
+          void onEmit(String... data) {
             getConnectEmitter().emit("error", data);
           };
         });
+        mySocket.connect();
       }
     });
   }
-  
-  public void send(String msg,Callback cb){
+
+  public void send(String msg, Callback<String, String> cb) {
     SockJsClient sockJsClient = globalSockets.get(urlPrefix);
-    if(sockJsClient != null){
+    if (sockJsClient != null) {
       sockJsClient.send(msg);
-      cb.done();
+      cb.call(null);
     } else {
-      cb.done("Not connected");
+      cb.call("Not connected");
     }
-    
+
   }
 
-  public void connect() {
+  public EventEmitter<String> connect() {
     Boolean connected = globalConnections.get(urlPrefix);
     if (connected == null || !connected) {
       doConnect();
     } else if (callback != null) {
-      callback.done();
+      callback.call(null);
     }
+    return getConnectEmitter();
   }
 
-  public EventEmitter getConnectEmitter() {
+  public void disconnect() {
+    SockJsClient socket = globalSockets.get(urlPrefix);
+    globalSockets.remove(urlPrefix);
+    if (socket != null)
+      socket.close();
+  }
+
+  public EventEmitter<String> getConnectEmitter() {
     return connectEmitter;
   }
 }

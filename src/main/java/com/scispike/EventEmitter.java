@@ -5,61 +5,67 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Set;
 
+public class EventEmitter<S> {
 
-public class EventEmitter {
+  abstract class Once<S> extends Event<S> {
+    private Callback<S, S> off;
 
-  abstract class Once extends Callback {
-    private Callback off;
-
-    public Callback getOff() {
+    public Callback<S,S> getOff() {
       return off;
     }
 
-    public void setOff(Callback off) {
+    public void setOff(Callback<S,S> off) {
       this.off = off;
     }
   }
 
-  final Map<String, Set<Callback>> listeners = new Hashtable<String, Set<Callback>>();
+  final Map<S, Set<Event<S>>> listeners = new Hashtable<S, Set<Event<S>>>();
 
-  public Callback once(final String msg, final Callback cb) {
-    Once once = new Once() {
+  public Callback<S,S> once(final S msg, final Event<S> cb) {
+    Once<S> once = new Once<S>() {
+
       @Override
-      void done(String... args) {
-        getOff().done(args);
-        cb.done(args);
+      void onEmit(S... args) {
+
+        getOff().call(null);
+        cb.onEmit(args);
       }
+
     };
-    Callback off = on(msg, once);
+    Callback<S, S> off = on(msg, once);
     // get around the final variable not init'd problem
     once.setOff(off);
     return off;
   }
 
-  public Callback on(final String msg, final Callback cb) {
-    Callback off = new Callback() {
+  public Callback<S, S> on(final S msg, final Event<S> cb) {
+    Callback<S, S> off = new Callback<S, S>() {
       @Override
-      void done(String... args) {
+      void call(S error, S... args) {
         listeners.get(msg).remove(cb);
       }
     };
-    Set<Callback> l = listeners.get(msg);
+    Set<Event<S>> l = listeners.get(msg);
     if (l == null) {
-      l = new HashSet<Callback>();
+      l = new HashSet<Event<S>>();
       listeners.put(msg, l);
     }
     l.add(cb);
     return off;
   }
 
-  public void emit(String msg, String... data) {
+  public void emit(S msg, S... data) {
     // toArray so we don't get concurrent modification from off
-    for (Callback cb : listeners.get(msg).toArray(new Callback[] {})) {
-      cb.done(data);
+    Set<Event<S>> set = listeners.get(msg);
+    if(set != null && set.size()>0){
+      Event<S>[] events = set.toArray(new Event[] {});
+      for (Event<S> cb : events) {
+        cb.onEmit(data);
+      }
     }
   }
 
-  public void removeAllListeners(String msg) {
+  public void removeAllListeners(S msg) {
     listeners.remove(msg);
   }
 
