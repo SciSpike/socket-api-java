@@ -11,7 +11,7 @@ import org.json.JSONObject;
 public abstract class WebSocketTransport extends WebSocketClient {
 
   public WebSocketTransport(URI serverURI) {
-    super(serverURI, new Draft_17());
+    super(serverURI);
   }
 
   public static int CONNECTING = 0;
