@@ -24,6 +24,7 @@ public class EventEmitter<S> {
   public Callback<S,S> once(final S msg, final Event<S> cb) {
     Once<S> once = new Once<S>() {
 
+      @SuppressWarnings("unchecked")
       @Override
       void onEmit(S... args) {
 
@@ -40,6 +41,7 @@ public class EventEmitter<S> {
 
   public Callback<S, S> on(final S msg, final Event<S> cb) {
     Callback<S, S> off = new Callback<S, S>() {
+      @SuppressWarnings("unchecked")
       @Override
       void call(S error, S... args) {
         listeners.get(msg).remove(cb);
@@ -54,6 +56,7 @@ public class EventEmitter<S> {
     return off;
   }
 
+  @SuppressWarnings("unchecked")
   public void emit(S msg, S... data) {
     // toArray so we don't get concurrent modification from off
     Set<Event<S>> set = listeners.get(msg);

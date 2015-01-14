@@ -28,12 +28,11 @@ public class Util {
         HttpClient client = new HttpClient();
         HttpMethod m = new GetMethod(HTTP_HOST);
         try {
-          int r = client.executeMethod(m);
-          Header[] hs= m.getResponseHeaders();
+          client.executeMethod(m);
           Header c = m.getResponseHeader("set-cookie");
           String v = c.getValue();
           String[] split = v.split(";");
-          String sessionId = URLDecoder.decode(split[0].split("=")[1]).replaceAll("s:([^\\.]*).*", "$1");;
+          String sessionId = URLDecoder.decode(split[0].split("=")[1],"UTF-8").replaceAll("s:([^\\.]*).*", "$1");;
           cb.call(null, "token", sessionId);
         } catch (HttpException e) {
           // TODO Auto-generated catch block
