@@ -67,7 +67,6 @@ public class Agent {
           
           @Override
           void onEmit(String... data) {
-            System.out.println(data[0]);
             if(data.length>0 && data[0] != null && data[0] != "null"){
               cb.onEmit(new JSONObject(data[0]));
             } else {
