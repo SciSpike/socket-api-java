@@ -16,9 +16,14 @@
         
     <!-- android -->
     <platform name="android">
-        <source-file src="src/main/java/com/scispike/SocketApi.java" target-dir="src/com/scispike/" /> 
-        <source-file src="src/main/java/com/scispike/SockJsClient.java" target-dir="src/com/scispike/" />    
-        <source-file src="src/main/java/com/scispike/WebSocketTransport.java" target-dir="src/com/scispike/" />   
+        <source-file src="src/main/java/com/scispike/callback/Callback.java" target-dir="src/com/scispike/callback/" /> 
+        <source-file src="src/main/java/com/scispike/callback/Event.java" target-dir="src/com/scispike/callback/" /> 
+        <source-file src="src/main/java/com/scispike/callback/EventEmitter.java" target-dir="src/com/scispike/callback/" /> 
+        <source-file src="src/main/java/com/scispike/conversation/Agent.java" target-dir="src/com/scispike/conversation/" /> 
+        <source-file src="src/main/java/com/scispike/ws/AuthFunction.java" target-dir="src/com/scispike/ws/" /> 
+        <source-file src="src/main/java/com/scispike/ws/Socket.java" target-dir="src/com/scispike/ws/" /> 
+        <source-file src="src/main/java/com/scispike/ws/SockJsClient.java" target-dir="src/com/scispike/ws/" />    
+        <source-file src="src/main/java/com/scispike/ws/WebSocketTransport.java" target-dir="src/com/scispike/ws/" />   
         
         <!-- java ws -->
         <source-file src="Java-WebSocket/src/main/java/org/java_websocket/AbstractWrappedByteChannel.java" target-dir="src/org/java_websocket" />

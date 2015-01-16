@@ -1,10 +1,15 @@
-package com.scispike;
+package com.scispike.ws;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Assert;
 import org.junit.Test;
+
+import com.scispike.callback.Callback;
+import com.scispike.callback.Event;
+import com.scispike.callback.EventEmitter;
+import com.scispike.test.Util;
 
 
 public class SocketTest {
@@ -15,7 +20,7 @@ public class SocketTest {
     Callback<String, String> connected = new Callback<String, String>() {
 
       @Override
-      void call(String error, String... args) {
+      public void call(String error, String... args) {
         Assert.assertNull(error);
       }
     };
@@ -24,7 +29,7 @@ public class SocketTest {
     connect.on("error", new Event<String>() {
       
       @Override
-      void onEmit(String... data) {
+      public void onEmit(String... data) {
         signal.countDown();
         throw new RuntimeException(data[0]);
       }
@@ -32,7 +37,7 @@ public class SocketTest {
     connect.on("connect", new Event<String>() {
 
       @Override
-      void onEmit(String... data) {
+      public void onEmit(String... data) {
         Assert.assertTrue(true);
         signal.countDown();
       }

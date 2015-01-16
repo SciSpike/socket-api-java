@@ -1,4 +1,4 @@
-package com.scispike;
+package com.scispike.ws;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -11,6 +11,10 @@ import org.java_websocket.WebSocket.READYSTATE;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import com.scispike.callback.Callback;
+import com.scispike.callback.Event;
+import com.scispike.callback.EventEmitter;
 
 public class Socket {
 
@@ -111,7 +115,7 @@ public class Socket {
     globalConnections.put(urlPrefix, true);
     authFunction.auth(new Callback<String, String>() {
       @Override
-      void call(String error, String... args) {
+      public void call(String error, String... args) {
         final String token = args[0];
         final String sessionId = args[1];
         final String url = urlPrefix + "/ws/" + sessionId + "/auth/" + token;
@@ -174,7 +178,7 @@ public class Socket {
         globalEmitter.once(sessionId + ":connected", new Event<String>() {
 
           @Override
-          void onEmit(String... args) {
+          public void onEmit(String... args) {
             globalSockets.put(urlPrefix, mySocket);
             globalEmitter.emit("connect", args);
             if (callback != null) {
@@ -184,13 +188,13 @@ public class Socket {
         });
         globalEmitter.on("connect", new Event<String>() {
           @Override
-          void onEmit(String... args) {
+          public void onEmit(String... args) {
             getConnectEmitter().emit("connect", args);
           }
         });
         globalEmitter.once("error", new Event<String>() {
           @Override
-          void onEmit(String... data) {
+          public void onEmit(String... data) {
             getConnectEmitter().emit("error", data);
           };
         });

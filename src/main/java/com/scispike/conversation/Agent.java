@@ -1,6 +1,11 @@
-package com.scispike;
+package com.scispike.conversation;
 
 import org.json.JSONObject;
+
+import com.scispike.callback.Callback;
+import com.scispike.callback.Event;
+import com.scispike.callback.EventEmitter;
+import com.scispike.ws.Socket;
 
 public class Agent {
   private String agent;
@@ -52,7 +57,7 @@ public class Agent {
         agent + ":state:" + event + ":" + agentData.getString("_id"), new Event<String>() {
           
           @Override
-          void onEmit(String... data) {
+          public void onEmit(String... data) {
             if(data.length>0 && data[0] != null){
               cb.onEmit(new JSONObject(data[0]));
             } else {
@@ -66,7 +71,7 @@ public class Agent {
         agent + ":state:" + event + ":" + agentData.getString("_id"), new Event<String>() {
           
           @Override
-          void onEmit(String... data) {
+          public void onEmit(String... data) {
             if(data.length>0 && data[0] != null && data[0] != "null"){
               cb.onEmit(new JSONObject(data[0]));
             } else {

@@ -1,4 +1,4 @@
-package com.scispike;
+package com.scispike.callback;
 
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -7,14 +7,15 @@ import java.util.Set;
 
 public class EventEmitter<S> {
 
+  @SuppressWarnings("hiding")
   abstract class Once<S> extends Event<S> {
     private Callback<S, S> off;
 
-    public Callback<S,S> getOff() {
+    Callback<S,S> getOff() {
       return off;
     }
 
-    public void setOff(Callback<S,S> off) {
+    void setOff(Callback<S,S> off) {
       this.off = off;
     }
   }
@@ -26,7 +27,7 @@ public class EventEmitter<S> {
 
       @SuppressWarnings("unchecked")
       @Override
-      void onEmit(S... args) {
+      public void onEmit(S... args) {
 
         getOff().call(null);
         cb.onEmit(args);
@@ -43,7 +44,7 @@ public class EventEmitter<S> {
     Callback<S, S> off = new Callback<S, S>() {
       @SuppressWarnings("unchecked")
       @Override
-      void call(S error, S... args) {
+      public void call(S error, S... args) {
         listeners.get(msg).remove(cb);
       }
     };

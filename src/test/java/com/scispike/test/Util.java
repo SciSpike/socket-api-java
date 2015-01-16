@@ -1,4 +1,4 @@
-package com.scispike;
+package com.scispike.test;
 
 import java.io.IOException;
 import java.net.URLDecoder;
@@ -8,6 +8,10 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
+
+import com.scispike.callback.Callback;
+import com.scispike.ws.AuthFunction;
+import com.scispike.ws.Socket;
 
 public class Util {
 
@@ -24,7 +28,7 @@ public class Util {
     return new AuthFunction() {
 
       @Override
-      void auth(Callback<String, String> cb) {
+      public void auth(Callback<String, String> cb) {
         HttpClient client = new HttpClient();
         HttpMethod m = new GetMethod(HTTP_HOST);
         try {

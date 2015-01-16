@@ -1,4 +1,4 @@
-package com.scispike;
+package com.scispike.ws;
 
 import java.net.MalformedURLException;
 import java.net.URI;

@@ -1,4 +1,4 @@
-package com.scispike;
+package com.scispike.conversation;
 
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
@@ -6,6 +6,11 @@ import java.util.concurrent.CountDownLatch;
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
+
+import com.scispike.callback.Event;
+import com.scispike.callback.EventEmitter;
+import com.scispike.test.Util;
+import com.scispike.ws.Socket;
 
 /*
  * Prior to running this tests you should:
@@ -26,7 +31,7 @@ public class AgentTest {
     
     agent.once("running",new Event<JSONObject>() {
       @Override
-      void onEmit(JSONObject... data) {
+      public void onEmit(JSONObject... data) {
         System.out.println("state running");
         for(JSONObject d : data){
           System.out.println(d);
@@ -38,7 +43,7 @@ public class AgentTest {
     });
     agent.once("null",new Event<JSONObject>() {
       @Override
-      void onEmit(JSONObject... data) {
+      public void onEmit(JSONObject... data) {
         System.out.println("state null");
         JSONObject o = new JSONObject() {
           {
@@ -51,7 +56,7 @@ public class AgentTest {
     });
     connectEmitter.once("connect",new Event<String>() {
       @Override
-      void onEmit(String... data) {
+      public void onEmit(String... data) {
         agent.init(null);
       }
     });
