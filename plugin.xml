@@ -2,8 +2,8 @@
  
 <plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
            id="com.scispike.socket-api"
-      version="0.9.0">
-    <name>BluetoothMsgHandler</name>
+      version="0.9.1">
+    <name>SocketApi</name>
     <description>Handles messages to and from other service to communicate with a conversation engine</description>
     <license>MIT</license>
 
