@@ -32,10 +32,11 @@
 			<artifactId>Java-WebSocket</artifactId>
 			<version>1.3.0</version>
 		</dependency>
+		<!--  This version is required to ensure android compatibility. -->
 		<dependency>
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
-			<version>20140107</version>
+			<version>20080701</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>

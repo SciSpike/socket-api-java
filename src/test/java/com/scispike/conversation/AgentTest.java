@@ -3,6 +3,7 @@ package com.scispike.conversation;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
@@ -45,13 +46,18 @@ public class AgentTest {
       @Override
       public void onEmit(JSONObject... data) {
         System.out.println("state null");
-        JSONObject o = new JSONObject() {
-          {
-            put("data", new JSONObject());
-          }
-        };
+        JSONObject o;
+        try {
+          o = new JSONObject() {
+            {
+              put("data", new JSONObject());
+            }
+          };
+          agent.emit("signal", o, null);
+        } catch (JSONException e) {
+          throw new RuntimeException(e);
+        }
         
-        agent.emit("signal", o, null);
       }
     });
     connectEmitter.once("connect",new Event<String>() {
