@@ -27,11 +27,11 @@ public abstract class WebSocketTransport extends WebSocketClient {
     String type = data.substring(0, 1);
     String sData = data.length() > 1 ? data.substring(1) : null;
     try {
-      switch (type) {
-      case "o":
+      switch (EventType.getFromName(type)) {
+      case OPEN:
         this._dispatchOpen();
         break;
-      case "a":
+      case ACCEPT:
         payload = sData != null ? new JSONArray(sData) : new JSONArray();
         int i = 0;
         while (i < payload.length()) {
@@ -40,14 +40,14 @@ public abstract class WebSocketTransport extends WebSocketClient {
           this._dispatchMessage(d);
         }
         break;
-      case "m":
+      case MESSAGE:
         this._dispatchMessage(sData != null ? new JSONObject(sData) : null);
         break;
-      case "c":
+      case CLOSE:
         payload = sData != null ? new JSONArray(sData) : new JSONArray();
         this._didClose(payload.get(0), payload.get(1));
         break;
-      case "h":
+      case HEARTBEAT:
         this._dispatchHeartbeat();
         break;
       }
