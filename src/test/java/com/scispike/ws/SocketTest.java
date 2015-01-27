@@ -41,8 +41,9 @@ public class SocketTest {
       @Override
       public void onEmit(String... data) {
         Assert.assertTrue(true);
-        s.hb.put(s.urlPrefix, true);
         signal.countDown();
+        s.resetHeartbeat();
+        s.hb.put(s.urlPrefix, true);
       }
     });
     s.connect();
