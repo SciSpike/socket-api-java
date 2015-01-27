@@ -102,8 +102,7 @@ public class Socket {
         if (!hb.get(urlPrefix)) {
           doReconnect();
         } else {
-          hb.put(urlPrefix, false);
-          timer.schedule(this, hb_interval);
+          resetHeartbeat();
         }
       }
     };
