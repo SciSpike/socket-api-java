@@ -89,36 +89,29 @@ public class Agent {
   public Callback<String, String> on(String event, final Event<JSONObject> cb) {
     return eventEmitter.on(
         agent + ":state:" + event + ":" + jsonGet(agentData, "_id"),
-        new Event<String>() {
-
-          @Override
-          public void onEmit(String... data) {
-            if (data.length > 0 && data[0] != null) {
-              JSONObject jsonObject = wrapData(data[0]);
-              cb.onEmit(jsonObject);
-            } else {
-              cb.onEmit();
-            }
-          }
-        });
+        eventCB(cb));
   }
 
   public Callback<String, String> once(String event, final Event<JSONObject> cb) {
     return eventEmitter.once(
         agent + ":state:" + event + ":" + jsonGet(agentData, "_id"),
-        new Event<String>() {
+        eventCB(cb));
+  }
 
-          @Override
-          public void onEmit(String... data) {
-            if (data.length > 0 && data[0] != null && data[0] != "null") {
-              JSONObject jsonObject = wrapData(data[0]);
-              cb.onEmit(jsonObject);
-            } else {
-              cb.onEmit();
-            }
-          }
+  private Event<String> eventCB(final Event<JSONObject> cb) {
+    return new Event<String>() {
 
-        });
+      @Override
+      public void onEmit(String... data) {
+        if (data.length > 0 && data[0] != null && data[0] != "null") {
+          JSONObject jsonObject = wrapData(data[0]);
+          cb.onEmit(jsonObject);
+        } else {
+          cb.onEmit();
+        }
+      }
+
+    };
   }
 
 }

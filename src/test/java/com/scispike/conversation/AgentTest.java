@@ -41,7 +41,13 @@ public class AgentTest {
         }
         Assert.assertEquals(data.length,1);
         Assert.assertNotNull(data[0]);
-        signal.countDown();
+        agent.once("running",new Event<JSONObject>() {
+          @Override
+          public void onEmit(JSONObject... data) {
+            signal.countDown();
+          }
+        });
+        agent.init(null);
       }
     });
     agent.once("null",new Event<JSONObject>() {
