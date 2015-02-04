@@ -2,6 +2,7 @@ package com.scispike.conversation;
 
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -22,6 +23,7 @@ import com.scispike.ws.Socket;
  * npm start
  */
 public class AgentTest {
+  
   @Test
   public void testConnect(){
     final CountDownLatch signal = new CountDownLatch(1);
@@ -60,7 +62,7 @@ public class AgentTest {
         
       }
     });
-    connectEmitter.once("connect",new Event<String>() {
+    connectEmitter.on("connect",new Event<String>() {
       @Override
       public void onEmit(String... data) {
         agent.init(null);
@@ -68,9 +70,11 @@ public class AgentTest {
     });
     socket.connect();
     try {
-      signal.await();// wait for connect
+      signal.await(10,TimeUnit.SECONDS);// wait for connect
     } catch (InterruptedException e) {
       Assert.fail(e.getMessage());
+    } finally {
+      socket.disconnect();
     }
     
   }

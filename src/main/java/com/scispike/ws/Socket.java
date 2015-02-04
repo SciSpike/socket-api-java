@@ -81,7 +81,7 @@ public class Socket {
 
   void retryConnect() {
     int backoff = backOff.get(urlPrefix);
-    backOff.put(urlPrefix, Math.max(bo_max, backoff * backoff));
+    backOff.put(urlPrefix, Math.min(bo_max, backoff * 2));
     cancelHeartbeat();
     TimerTask t = new TimerTask() {
       @Override
@@ -106,6 +106,7 @@ public class Socket {
         }
       }
     };
+    globalTasks.put(urlPrefix,t);
     timer.schedule(t, hb_interval);
 
   }
@@ -115,6 +116,10 @@ public class Socket {
     authFunction.auth(new Callback<String, String>() {
       @Override
       public void call(String error, String... args) {
+        if(error!=null){
+          retryConnect();
+          return;
+        }
         final String token = args[0];
         final String sessionId = args[1];
         final String url = urlPrefix + "/ws/" + sessionId + "/auth/" + token;
@@ -224,6 +229,7 @@ public class Socket {
   public EventEmitter<String> connect() {
     Boolean connected = globalConnections.get(urlPrefix);
     if (connected == null || !connected) {
+      resetBackoff();
       doConnect();
     } else {
       getConnectEmitter().emit("connect");
@@ -238,7 +244,12 @@ public class Socket {
     SockJsClient socket = globalSockets.get(urlPrefix);
     globalSockets.remove(urlPrefix);
     if (socket != null)
-      socket.close();
+      try {
+        socket.closeBlocking();
+      } catch (InterruptedException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
   }
 
   public EventEmitter<String> getConnectEmitter() {

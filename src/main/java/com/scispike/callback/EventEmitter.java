@@ -72,5 +72,8 @@ public class EventEmitter<S> {
   public void removeAllListeners(S msg) {
     listeners.remove(msg);
   }
+  public void removeAllListeners(){
+    listeners.clear();
+  }
 
 }
