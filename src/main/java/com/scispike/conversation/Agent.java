@@ -69,6 +69,10 @@ public class Agent {
     jsonPut(msg, "data", agentData);
     socket.send(msg.toString(), cb);
   }
+  public void send(String event, JSONObject eventData,
+      Callback<String, String> cb) {
+    emit(event, eventData, cb);
+  }
 
   public void emit(String event, JSONObject eventData,
       Callback<String, String> cb) {

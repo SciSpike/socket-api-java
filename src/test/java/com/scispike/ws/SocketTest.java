@@ -30,7 +30,7 @@ public class SocketTest {
     socket.connect();
     try {
       signal.await(10,TimeUnit.SECONDS);// wait for connect
-      socket.isConnected();
+      Assert.assertTrue(socket.isConnected());
     } catch (InterruptedException e) {
       Assert.fail(e.getMessage());
     } finally {

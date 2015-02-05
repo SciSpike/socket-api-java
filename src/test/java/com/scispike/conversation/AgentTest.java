@@ -3,12 +3,14 @@ package com.scispike.conversation;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.scispike.callback.Callback;
 import com.scispike.callback.Event;
 import com.scispike.callback.EventEmitter;
 import com.scispike.test.Util;
@@ -28,10 +30,16 @@ public class AgentTest {
   public void testConnect(){
     final CountDownLatch signal = new CountDownLatch(1);
     Socket socket = Util.getSocket();
-    
+    final AtomicInteger i = new AtomicInteger();
     EventEmitter<String> connectEmitter = socket.getConnectEmitter();
     final Agent agent = new Agent("test.obj", socket, UUID.randomUUID().toString());
-    
+    agent.on("error", new Event<JSONObject>() {
+      
+      @Override
+      public void onEmit(JSONObject... data) {
+        Assert.fail(data[0].toString());
+      }
+    });
     agent.once("running",new Event<JSONObject>() {
       @Override
       public void onEmit(JSONObject... data) {
@@ -41,9 +49,10 @@ public class AgentTest {
         }
         Assert.assertEquals(data.length,1);
         Assert.assertNotNull(data[0]);
-        agent.once("running",new Event<JSONObject>() {
+        agent.on("running",new Event<JSONObject>() {
           @Override
           public void onEmit(JSONObject... data) {
+            i.incrementAndGet();
             signal.countDown();
           }
         });
@@ -61,7 +70,13 @@ public class AgentTest {
               put("data", new JSONObject());
             }
           };
-          agent.emit("signal", o, null);
+          agent.send("signal", o, new Callback<String, String>() {
+            
+            @Override
+            public void call(String error, String... args) {
+              Assert.assertNull(error);
+            }
+          });
         } catch (JSONException e) {
           throw new RuntimeException(e);
         }
@@ -76,7 +91,8 @@ public class AgentTest {
     });
     socket.connect();
     try {
-      signal.await(10,TimeUnit.SECONDS);// wait for connect
+      signal.await(2,TimeUnit.SECONDS);// wait for connect
+      Assert.assertEquals("should have bumped the counter",1, i.get());
     } catch (InterruptedException e) {
       Assert.fail(e.getMessage());
     } finally {

@@ -247,7 +247,6 @@ public class Socket {
       try {
         socket.closeBlocking();
       } catch (InterruptedException e) {
-        // TODO Auto-generated catch block
         e.printStackTrace();
       }
   }
