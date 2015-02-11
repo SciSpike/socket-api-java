@@ -209,7 +209,7 @@ public class Socket {
 
   public boolean isConnected() {
     SockJsClient sockJsClient = globalSockets.get(urlPrefix);
-    return sockJsClient.getReadyState() == READYSTATE.OPEN;
+    return sockJsClient != null && sockJsClient.getReadyState() == READYSTATE.OPEN;
   }
 
   public void send(String msg, Callback<String, String> cb) {

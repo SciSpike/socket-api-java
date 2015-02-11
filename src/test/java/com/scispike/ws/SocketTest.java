@@ -84,6 +84,40 @@ public class SocketTest {
     }
   }
 
-
+ @Test
+  public void TestIsConnected() {
+    final CountDownLatch signal = new CountDownLatch(1);
+    Callback<String, String> connected = new Callback<String, String>() {
+      @Override
+      public void call(String error, String... args) {
+        Assert.assertNull(error);
+      }
+    };
+    final Socket s = Util.getSocket(connected, new AtomicInteger(0));
+    EventEmitter<String> connect = s.getConnectEmitter();
+    connect.on("disconnect", new Event<String>() {
+      @Override
+      public void onEmit(String... data) {
+        Assert.assertTrue(true);
+        signal.countDown();
+      }
+    });
+    connect.on("connect", new Event<String>() {
+      @Override
+      public void onEmit(String... data) {
+        Assert.assertTrue(true);
+        signal.countDown();
+      }
+    });
+    s.connect();
+    try {
+      signal.await(2,TimeUnit.SECONDS);// wait for connect
+      s.disconnect();
+      signal.await(2,TimeUnit.SECONDS);// wait for connect
+      Assert.assertEquals(s.isConnected(), false);
+    } catch (InterruptedException e) {
+      Assert.fail(e.getMessage());
+    }
+  }
   
 }
