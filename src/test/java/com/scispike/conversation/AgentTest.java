@@ -30,7 +30,6 @@ public class AgentTest {
   public void testConnect(){
     final CountDownLatch signal = new CountDownLatch(1);
     Socket socket = Util.getSocket();
-    final AtomicInteger i = new AtomicInteger();
     EventEmitter<String> connectEmitter = socket.getConnectEmitter();
     final Agent agent = new Agent("test.obj", socket, UUID.randomUUID().toString());
     agent.on("error", new Event<JSONObject>() {
@@ -52,7 +51,6 @@ public class AgentTest {
         agent.on("running",new Event<JSONObject>() {
           @Override
           public void onEmit(JSONObject... data) {
-            i.incrementAndGet();
             signal.countDown();
           }
         });
@@ -92,7 +90,7 @@ public class AgentTest {
     socket.connect();
     try {
       signal.await(2,TimeUnit.SECONDS);// wait for connect
-      Assert.assertEquals("should have bumped the counter",1, i.get());
+      Assert.assertEquals("should have gotten to running",0, signal.getCount());
     } catch (InterruptedException e) {
       Assert.fail(e.getMessage());
     } finally {
