@@ -231,7 +231,7 @@ public class Socket {
     if (connected == null || !connected) {
       resetBackoff();
       doConnect();
-    } else {
+    } else if(isConnected()){
       getConnectEmitter().emit("connect");
       if (callback != null) {
         callback.call(null);
