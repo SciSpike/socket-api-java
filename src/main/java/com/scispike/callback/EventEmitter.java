@@ -2,6 +2,7 @@ package com.scispike.callback;
 
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -50,7 +51,7 @@ public class EventEmitter<S> {
     };
     Set<Event<S>> l = listeners.get(msg);
     if (l == null) {
-      l = new HashSet<Event<S>>();
+      l = new LinkedHashSet<Event<S>>();
       listeners.put(msg, l);
     }
     l.add(cb);
