@@ -52,7 +52,8 @@ public abstract class WebSocketTransport extends WebSocketClient {
         break;
       }
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      e.printStackTrace();
+//      throw new RuntimeException(e);
     }
   }
 
