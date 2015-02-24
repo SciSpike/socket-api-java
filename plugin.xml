@@ -2,7 +2,7 @@
  
 <plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
            id="com.scispike.socket-api"
-      version="1.1.1">
+      version="1.1.2">
     <name>SocketApi</name>
     <description>Handles messages to and from other service to communicate with a conversation engine</description>
     <license>MIT</license>
@@ -21,7 +21,8 @@
         <source-file src="src/main/java/com/scispike/callback/EventEmitter.java" target-dir="src/com/scispike/callback/" /> 
         <source-file src="src/main/java/com/scispike/conversation/Agent.java" target-dir="src/com/scispike/conversation/" /> 
         <source-file src="src/main/java/com/scispike/ws/AuthFunction.java" target-dir="src/com/scispike/ws/" /> 
-        <source-file src="src/main/java/com/scispike/ws/Socket.java" target-dir="src/com/scispike/ws/" /> 
+        <source-file src="src/main/java/com/scispike/ws/Socket.java" target-dir="src/com/scispike/ws/" />
+        <source-file src="src/main/java/com/scispike/ws/ReconnectingSocket.java" target-dir="src/com/scispike/ws/" />
         <source-file src="src/main/java/com/scispike/ws/SockJsClient.java" target-dir="src/com/scispike/ws/" />    
         <source-file src="src/main/java/com/scispike/ws/WebSocketTransport.java" target-dir="src/com/scispike/ws/" />   
         
