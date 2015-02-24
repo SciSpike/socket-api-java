@@ -2,8 +2,6 @@ package com.scispike.conversation;
 
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -81,7 +79,7 @@ public class AgentTest {
         
       }
     });
-    connectEmitter.on("connect",new Event<String>() {
+    connectEmitter.on("socket::connected",new Event<String>() {
       @Override
       public void onEmit(String... data) {
         agent.init(null);
@@ -89,7 +87,7 @@ public class AgentTest {
     });
     socket.connect();
     try {
-      signal.await(2,TimeUnit.SECONDS);// wait for connect
+      signal.await();// wait for connect
       Assert.assertEquals("should have gotten to running",0, signal.getCount());
     } catch (InterruptedException e) {
       Assert.fail(e.getMessage());

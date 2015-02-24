@@ -117,5 +117,8 @@ public class Agent {
 
     };
   }
+  public void disconnect(){
+    eventEmitter.removeAllListeners();
+  }
 
 }
