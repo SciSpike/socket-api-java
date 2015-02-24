@@ -81,8 +81,10 @@ public class ReconnectingSocket {
 
   }
 
-  void send(String message, String... data) {
+  void emit(String message, String... data) {
+    int i = 0;
     for (EventEmitter<String> e : eventEmitters) {
+      i++;
       e.emit(message, data);
     }
   }
@@ -124,7 +126,7 @@ public class ReconnectingSocket {
           public void onError(Exception arg0) {
             cancelHeartbeat();
             doDisconnect();
-            ReconnectingSocket.this.send("error", arg0.getMessage());
+            emit("error", arg0.getMessage());
           }
 
           @Override
@@ -133,8 +135,8 @@ public class ReconnectingSocket {
             isConnecting = false;
 
             retryConnect();
-            ReconnectingSocket.this.send("error", "disconnected");
-            ReconnectingSocket.this.send("socket::disconnected");
+            emit("error", "disconnected");
+            emit("socket::disconnected");
           }
 
           @Override
@@ -161,15 +163,13 @@ public class ReconnectingSocket {
               Object d = msg.has("data") ? msg.get("data") : null;
               String event = msg.getString("event");
               if (d != null) {
-                ReconnectingSocket.this.send(event, d.toString());
-                ReconnectingSocket.this.send(event, d.toString());
+                emit(event, d.toString());
               } else {
-                ReconnectingSocket.this.send(event);
-                ReconnectingSocket.this.send(event);
+                emit(event);
               }
               if (event.equals(sessionId + ":connected")) {
                 socket = this;
-                ReconnectingSocket.this.send("socket::connected");
+                emit("socket::connected");
               }
 
             } catch (JSONException e) {
