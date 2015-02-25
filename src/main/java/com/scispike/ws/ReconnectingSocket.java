@@ -211,11 +211,13 @@ public class ReconnectingSocket {
 
   private void doDisconnect() {
     resetBackoff();
-    try {
-      socket.closeBlocking();
-      socket = null;
-    } catch (InterruptedException e) {
-      e.printStackTrace();
+    if (socket != null){
+      try {
+        socket.closeBlocking();
+        socket = null;
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
     }
   }
 
