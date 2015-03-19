@@ -37,8 +37,10 @@
         <source-file src="Java-WebSocket/src/main/java/org/java_websocket/WebSocketListener.java" target-dir="src/org/java_websocket" />
         <source-file src="Java-WebSocket/src/main/java/org/java_websocket/WrappedByteChannel.java" target-dir="src/org/java_websocket" />
 
-        <source-file src="Java-WebSocket/src/main/java/org/java_websocket/client/AbstractClientProxyChannel.java" target-dir="src/org/java_websocket/client" />
         <source-file src="Java-WebSocket/src/main/java/org/java_websocket/client/WebSocketClient.java" target-dir="src/org/java_websocket/client" />
+        <source-file src="Java-WebSocket/src/main/java/org/java_websocket/client/DefaultSSLWebSocketClientFactory.java" target-dir="src/org/java_websocket/client" />
+        <source-file src="Java-WebSocket/src/main/java/org/java_websocket/client/DefaultWebSocketClientFactory.java" target-dir="src/org/java_websocket/client" />
+        <source-file src="Java-WebSocket/src/main/java/org/java_websocket/client/AbstractClientProxyChannel.java" target-dir="src/org/java_websocket/client" />
         
         <source-file src="Java-WebSocket/src/main/java/org/java_websocket/drafts/Draft.java" target-dir="src/org/java_websocket/drafts" />
         <source-file src="Java-WebSocket/src/main/java/org/java_websocket/drafts/Draft_10.java" target-dir="src/org/java_websocket/drafts" />

@@ -2,6 +2,9 @@ package com.scispike.ws;
 
 import java.net.URI;
 
+import javax.net.ssl.SSLContext;
+
+import org.java_websocket.client.DefaultSSLWebSocketClientFactory;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.drafts.Draft_17;
 import org.java_websocket.handshake.ServerHandshake;
@@ -12,14 +15,20 @@ public abstract class WebSocketTransport extends WebSocketClient {
 
   public WebSocketTransport(URI serverURI) {
     super(serverURI, new Draft_17());
+    if(sslContext != null && this.uri.getScheme().matches("wss|https")){
+      this.setWebSocketFactory(new DefaultSSLWebSocketClientFactory(sslContext));
+    }
   }
 
   public static int CONNECTING = 0;
   public static int OPEN = 1;
   public static int CLOSING = 2;
   public static int CLOSED = 3;
-
+  
+  private static SSLContext sslContext;
+  
   private int readyState = WebSocketTransport.CONNECTING;
+  
 
   @Override
   public void onMessage(String data) {
@@ -102,5 +111,14 @@ public abstract class WebSocketTransport extends WebSocketClient {
   abstract void onData(Object data);
   abstract void onJOpen();
   abstract void onJClose();
+
+  public static SSLContext getSslContext() {
+    return sslContext;
+  }
+
+  public static void setSslContext(SSLContext sslContext) {
+    WebSocketTransport.sslContext = sslContext;
+  }
+
 
 }
