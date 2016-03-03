@@ -1,6 +1,7 @@
 package com.scispike.ws;
 
 import java.net.URI;
+import java.security.NoSuchAlgorithmException;
 
 import javax.net.ssl.SSLContext;
 
@@ -25,10 +26,17 @@ public abstract class WebSocketTransport extends WebSocketClient {
   public static int CLOSING = 2;
   public static int CLOSED = 3;
   
-  private static SSLContext sslContext;
+  private static SSLContext sslContext = getDefaultSSLContect();
   
   private int readyState = WebSocketTransport.CONNECTING;
   
+  static SSLContext getDefaultSSLContect(){
+    try {
+      return SSLContext.getInstance( "TLS" );
+    } catch (NoSuchAlgorithmException e) {
+      throw new RuntimeException(e);
+    }
+  }
 
   @Override
   public void onMessage(String data) {
