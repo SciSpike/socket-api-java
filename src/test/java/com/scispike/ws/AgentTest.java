@@ -1,4 +1,4 @@
-package com.scispike.conversation;
+package com.scispike.ws;
 
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
@@ -11,8 +11,10 @@ import org.junit.Test;
 import com.scispike.callback.Callback;
 import com.scispike.callback.Event;
 import com.scispike.callback.EventEmitter;
-import com.scispike.test.Util;
-import com.scispike.ws.Socket;
+import com.scispike.conversation.Agent;
+import com.scispike.conversation.Socket;
+import com.scispike.ws.test.Util;
+import com.scispike.ws.WsAgent;
 
 /*
  * Prior to running this tests you should:
@@ -29,7 +31,7 @@ public class AgentTest {
     final CountDownLatch signal = new CountDownLatch(1);
     Socket socket = Util.getSocket();
     EventEmitter<String> connectEmitter = socket.getConnectEmitter();
-    final Agent agent = new Agent("test.obj", socket, UUID.randomUUID().toString());
+    final Agent agent = new WsAgent("test.obj", socket, UUID.randomUUID().toString());
     agent.on("error", new Event<JSONObject>() {
       
       @Override
@@ -66,7 +68,7 @@ public class AgentTest {
               put("data", new JSONObject());
             }
           };
-          agent.send("signal", o, new Callback<String, String>() {
+          agent.emit("signal", o, new Callback<String, String>() {
             
             @Override
             public void call(String error, String... args) {
@@ -79,13 +81,7 @@ public class AgentTest {
         
       }
     });
-    connectEmitter.on("socket::connected",new Event<String>() {
-      @Override
-      public void onEmit(String... data) {
-        agent.init(null);
-      }
-    });
-    socket.connect();
+    agent.ready();
     try {
       signal.await();// wait for connect
       Assert.assertEquals("should have gotten to running",0, signal.getCount());

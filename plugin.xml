@@ -2,7 +2,7 @@
  
 <plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
            id="com.scispike.socket-api"
-      version="1.1.6">
+      version="2.0.0">
     <name>SocketApi</name>
     <description>Handles messages to and from other service to communicate with a conversation engine</description>
     <license>MIT</license>
@@ -16,69 +16,20 @@
         
     <!-- android -->
     <platform name="android">
+        <framework src="build-extras.gradle" custom="true" type="gradleReference" />
         <source-file src="src/main/java/com/scispike/callback/Callback.java" target-dir="src/com/scispike/callback/" /> 
         <source-file src="src/main/java/com/scispike/callback/Event.java" target-dir="src/com/scispike/callback/" /> 
         <source-file src="src/main/java/com/scispike/callback/EventEmitter.java" target-dir="src/com/scispike/callback/" /> 
         <source-file src="src/main/java/com/scispike/conversation/Agent.java" target-dir="src/com/scispike/conversation/" /> 
-        <source-file src="src/main/java/com/scispike/ws/AuthFunction.java" target-dir="src/com/scispike/ws/" /> 
-        <source-file src="src/main/java/com/scispike/ws/Socket.java" target-dir="src/com/scispike/ws/" />
+        <source-file src="src/main/java/com/scispike/conversation/AuthFunction.java" target-dir="src/com/scispike/conversation/" /> 
+        <source-file src="src/main/java/com/scispike/conversation/Socket.java" target-dir="src/com/scispike/conversation/" />
+        <source-file src="src/main/java/com/scispike/mqtt/MqttSocket.java" target-dir="src/com/scispike/mqtt/" />
+        <source-file src="src/main/java/com/scispike/mqtt/MqttAgent.java" target-dir="src/com/scispike/mqtt/" />
+        <source-file src="src/main/java/com/scispike/mqtt/MqttWrapper.java" target-dir="src/com/scispike/mqtt/" />
         <source-file src="src/main/java/com/scispike/ws/ReconnectingSocket.java" target-dir="src/com/scispike/ws/" />
         <source-file src="src/main/java/com/scispike/ws/SockJsClient.java" target-dir="src/com/scispike/ws/" />    
         <source-file src="src/main/java/com/scispike/ws/WebSocketTransport.java" target-dir="src/com/scispike/ws/" />   
-        
-        <!-- java ws -->
-        <source-file src="Java-WebSocket/src/main/java/org/java_websocket/AbstractWrappedByteChannel.java" target-dir="src/org/java_websocket" />
-        <source-file src="Java-WebSocket/src/main/java/org/java_websocket/SocketChannelIOHelper.java" target-dir="src/org/java_websocket" />
-        <source-file src="Java-WebSocket/src/main/java/org/java_websocket/SSLSocketChannel2.java" target-dir="src/org/java_websocket" />
-        <source-file src="Java-WebSocket/src/main/java/org/java_websocket/WebSocket.java" target-dir="src/org/java_websocket" />
-        <source-file src="Java-WebSocket/src/main/java/org/java_websocket/WebSocketAdapter.java" target-dir="src/org/java_websocket" />
-        <source-file src="Java-WebSocket/src/main/java/org/java_websocket/WebSocketFactory.java" target-dir="src/org/java_websocket" />
-        <source-file src="Java-WebSocket/src/main/java/org/java_websocket/WebSocketImpl.java" target-dir="src/org/java_websocket" />
-        <source-file src="Java-WebSocket/src/main/java/org/java_websocket/WebSocketListener.java" target-dir="src/org/java_websocket" />
-        <source-file src="Java-WebSocket/src/main/java/org/java_websocket/WrappedByteChannel.java" target-dir="src/org/java_websocket" />
-
-        <source-file src="Java-WebSocket/src/main/java/org/java_websocket/client/WebSocketClient.java" target-dir="src/org/java_websocket/client" />
-        <source-file src="Java-WebSocket/src/main/java/org/java_websocket/client/DefaultSSLWebSocketClientFactory.java" target-dir="src/org/java_websocket/client" />
-        <source-file src="Java-WebSocket/src/main/java/org/java_websocket/client/DefaultWebSocketClientFactory.java" target-dir="src/org/java_websocket/client" />
-        <source-file src="Java-WebSocket/src/main/java/org/java_websocket/client/AbstractClientProxyChannel.java" target-dir="src/org/java_websocket/client" />
-        
-        <source-file src="Java-WebSocket/src/main/java/org/java_websocket/drafts/Draft.java" target-dir="src/org/java_websocket/drafts" />
-        <source-file src="Java-WebSocket/src/main/java/org/java_websocket/drafts/Draft_10.java" target-dir="src/org/java_websocket/drafts" />
-        <source-file src="Java-WebSocket/src/main/java/org/java_websocket/drafts/Draft_17.java" target-dir="src/org/java_websocket/drafts" />
-        <source-file src="Java-WebSocket/src/main/java/org/java_websocket/drafts/Draft_75.java" target-dir="src/org/java_websocket/drafts" />
-        <source-file src="Java-WebSocket/src/main/java/org/java_websocket/drafts/Draft_76.java" target-dir="src/org/java_websocket/drafts" />
-
-        <source-file src="Java-WebSocket/src/main/java/org/java_websocket/exceptions/IncompleteHandshakeException.java" target-dir="src/org/java_websocket/exceptions" />
-        <source-file src="Java-WebSocket/src/main/java/org/java_websocket/exceptions/InvalidDataException.java" target-dir="src/org/java_websocket/exceptions" />
-        <source-file src="Java-WebSocket/src/main/java/org/java_websocket/exceptions/InvalidFrameException.java" target-dir="src/org/java_websocket/exceptions" />
-        <source-file src="Java-WebSocket/src/main/java/org/java_websocket/exceptions/InvalidHandshakeException.java" target-dir="src/org/java_websocket/exceptions" />
-        <source-file src="Java-WebSocket/src/main/java/org/java_websocket/exceptions/LimitExedeedException.java" target-dir="src/org/java_websocket/exceptions" />
-        <source-file src="Java-WebSocket/src/main/java/org/java_websocket/exceptions/NotSendableException.java" target-dir="src/org/java_websocket/exceptions" />
-        <source-file src="Java-WebSocket/src/main/java/org/java_websocket/exceptions/WebsocketNotConnectedException.java" target-dir="src/org/java_websocket/exceptions" />
-
-        <source-file src="Java-WebSocket/src/main/java/org/java_websocket/framing/CloseFrame.java" target-dir="src/org/java_websocket/framing" />
-        <source-file src="Java-WebSocket/src/main/java/org/java_websocket/framing/CloseFrameBuilder.java" target-dir="src/org/java_websocket/framing" />
-        <source-file src="Java-WebSocket/src/main/java/org/java_websocket/framing/FrameBuilder.java" target-dir="src/org/java_websocket/framing" />
-        <source-file src="Java-WebSocket/src/main/java/org/java_websocket/framing/Framedata.java" target-dir="src/org/java_websocket/framing" />
-        <source-file src="Java-WebSocket/src/main/java/org/java_websocket/framing/FramedataImpl1.java" target-dir="src/org/java_websocket/framing" />
-        
-        <source-file src="Java-WebSocket/src/main/java/org/java_websocket/handshake/ClientHandshake.java" target-dir="src/org/java_websocket/handshake" />
-        <source-file src="Java-WebSocket/src/main/java/org/java_websocket/handshake/ClientHandshakeBuilder.java" target-dir="src/org/java_websocket/handshake" />
-        <source-file src="Java-WebSocket/src/main/java/org/java_websocket/handshake/HandshakeBuilder.java" target-dir="src/org/java_websocket/handshake" />
-        <source-file src="Java-WebSocket/src/main/java/org/java_websocket/handshake/Handshakedata.java" target-dir="src/org/java_websocket/handshake" />
-        <source-file src="Java-WebSocket/src/main/java/org/java_websocket/handshake/HandshakedataImpl1.java" target-dir="src/org/java_websocket/handshake" />
-        <source-file src="Java-WebSocket/src/main/java/org/java_websocket/handshake/HandshakeImpl1Client.java" target-dir="src/org/java_websocket/handshake" />
-        <source-file src="Java-WebSocket/src/main/java/org/java_websocket/handshake/HandshakeImpl1Server.java" target-dir="src/org/java_websocket/handshake" />
-        <source-file src="Java-WebSocket/src/main/java/org/java_websocket/handshake/ServerHandshake.java" target-dir="src/org/java_websocket/handshake" />
-        <source-file src="Java-WebSocket/src/main/java/org/java_websocket/handshake/ServerHandshakeBuilder.java" target-dir="src/org/java_websocket/handshake" />
-
-        <source-file src="Java-WebSocket/src/main/java/org/java_websocket/server/DefaultSSLWebSocketServerFactory.java" target-dir="src/org/java_websocket/server" />
-        <source-file src="Java-WebSocket/src/main/java/org/java_websocket/server/DefaultWebSocketServerFactory.java" target-dir="src/org/java_websocket/server" />
-        <source-file src="Java-WebSocket/src/main/java/org/java_websocket/server/WebSocketServer.java" target-dir="src/org/java_websocket/server" />
-
-        <source-file src="Java-WebSocket/src/main/java/org/java_websocket/util/Base64.java" target-dir="src/org/java_websocket/util" />
-        <source-file src="Java-WebSocket/src/main/java/org/java_websocket/util/Charsetfunctions.java" target-dir="src/org/java_websocket/util" />
-        
-           
+        <source-file src="src/main/java/com/scispike/ws/WsSocket.java" target-dir="src/com/scispike/ws/" />
+        <source-file src="src/main/java/com/scispike/ws/WsAgent.java" target-dir="src/com/scispike/ws/" />
     </platform>          
 </plugin>

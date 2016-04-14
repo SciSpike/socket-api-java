@@ -11,30 +11,13 @@ import org.junit.Test;
 import com.scispike.callback.Callback;
 import com.scispike.callback.Event;
 import com.scispike.callback.EventEmitter;
-import com.scispike.test.Util;
+import com.scispike.conversation.Socket;
+import com.scispike.ws.test.Util;
 
 public class SocketTest {
   
 
   private static final TimeUnit UNIT = TimeUnit.SECONDS;
-  
-  @Before
-  public void clean () throws InterruptedException{
-    final CountDownLatch beforeState = new CountDownLatch(1);
-    
-    final Socket s0 = Util.getSocket(null, new AtomicInteger(0));
-    ReconnectingSocket s=   s0.socket;
-    s.disconnectAll(new Event<String>() {
-      
-      @Override
-      public void onEmit(String... data) {
-        beforeState.countDown();
-        
-      }
-    });
-    beforeState.await(2,UNIT);
-    Assert.assertEquals(0,beforeState.getCount());
-  }
 
   @Test
   public void authFailure() {
@@ -42,13 +25,15 @@ public class SocketTest {
     Socket socket = Util.getSocket(null, new AtomicInteger(2));
 
     EventEmitter<String> connectEmitter = socket.getConnectEmitter();
+    if(socket.isConnected()){
+      signal.countDown();
+    }
     connectEmitter.on("socket::connected", new Event<String>() {
       @Override
       public void onEmit(String... data) {
         signal.countDown();
       }
     });
-    socket.connect();
     try {
       signal.await(10, UNIT);// wait for connect
       Assert.assertTrue(socket.isConnected());
@@ -70,7 +55,7 @@ public class SocketTest {
         Assert.assertNull(error);
       }
     };
-    final Socket s = Util.getSocket(connected, new AtomicInteger(0));
+    final WsSocket s = Util.getSocket(connected, new AtomicInteger(0));
     ReconnectingSocket.HB_INTERVAL = 400;
     EventEmitter<String> connect = s.getConnectEmitter();
     connect.on("error", new Event<String>() {
@@ -82,6 +67,9 @@ public class SocketTest {
         System.out.println(data[0]);
       }
     });
+    if(s.isConnected()){
+      signal.countDown();
+    }
     connect.on("socket::connected", new Event<String>() {
       @Override
       public void onEmit(String... data) {
@@ -91,7 +79,6 @@ public class SocketTest {
         s.socket.hb.put(s.urlPrefix, true);
       }
     });
-    s.connect();
     try {
       signal.await(10, UNIT);// wait for connect
       Assert.assertEquals(signal.getCount(), 0);
@@ -112,7 +99,7 @@ public class SocketTest {
     final CountDownLatch disconnectState2 = new CountDownLatch(1);
 
     
-    final Socket s1 = Util.getSocket(null, new AtomicInteger(0));
+    final WsSocket s1 = Util.getSocket(null, new AtomicInteger(0));
     final Socket s2 = Util.getSocket(null, new AtomicInteger(0));
     ReconnectingSocket s = s1.socket;
 
@@ -138,13 +125,17 @@ public class SocketTest {
         disconnectState2.countDown();
       }
     };
+    if(s1.isConnected()){
+      cb.onEmit();
+    }
+    if(s2.isConnected()){
+      cb.onEmit();
+    }
     connectEmitter1.once("socket::connected", cb);
     connectEmitter2.once("socket::connected", cb);
     connectEmitter1.once("socket::disconnected", dcb1);
     connectEmitter2.once("socket::disconnected", dcb2);
     
-    s1.connect();
-    s2.connect();
     connectState.await(2, UNIT);
     Assert.assertEquals(0, connectState.getCount());
     Assert.assertEquals(2, s1.socket.eventEmitters.size());
@@ -184,6 +175,9 @@ public class SocketTest {
         signal.countDown();
       }
     });
+    if(s.isConnected()){
+      signal.countDown();
+    }
     connect.on("socket::connected", new Event<String>() {
       @Override
       public void onEmit(String... data) {
@@ -191,7 +185,6 @@ public class SocketTest {
         signal.countDown();
       }
     });
-    s.connect();
     try {
       signal.await(2, UNIT);// wait for connect
       s.disconnect();

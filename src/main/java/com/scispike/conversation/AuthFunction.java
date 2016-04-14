@@ -1,4 +1,4 @@
-package com.scispike.ws;
+package com.scispike.conversation;
 
 import com.scispike.callback.Callback;
 

@@ -17,10 +17,11 @@ import org.json.JSONObject;
 import com.scispike.callback.Callback;
 import com.scispike.callback.Event;
 import com.scispike.callback.EventEmitter;
+import com.scispike.conversation.AuthFunction;
 
 public class ReconnectingSocket {
 
-  private static final int bo_min = 100;
+  private static final int bo_min = 1000;
   public static int HB_INTERVAL = 30000;
   public static int BO_MAX = 10 * 1000;
 
@@ -125,7 +126,7 @@ public class ReconnectingSocket {
           @Override
           public void onError(Exception arg0) {
             cancelHeartbeat();
-            doDisconnect();
+            doDisconnect(this);
             emit("error", arg0.getMessage());
           }
 
@@ -208,13 +209,18 @@ public class ReconnectingSocket {
       eventEmitter.emit("socket::connected");
     }
   }
-
   private void doDisconnect() {
+    doDisconnect(null);
+  }
+  private void doDisconnect(SockJsClient sockJsClient) {
     resetBackoff();
-    if (socket != null){
+    if(socket != null){
+      sockJsClient = socket;
+      socket=null;
+    }
+    if (sockJsClient != null){
       try {
-        socket.closeBlocking();
-        socket = null;
+        sockJsClient.closeBlocking();
       } catch (InterruptedException e) {
         e.printStackTrace();
       }

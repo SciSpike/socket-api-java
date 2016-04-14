@@ -1,4 +1,4 @@
-package com.scispike.test;
+package com.scispike.ws.test;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,8 +26,9 @@ import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
 import org.apache.commons.httpclient.protocol.SecureProtocolSocketFactory;
 
 import com.scispike.callback.Callback;
-import com.scispike.ws.AuthFunction;
-import com.scispike.ws.Socket;
+import com.scispike.conversation.AuthFunction;
+import com.scispike.conversation.Socket;
+import com.scispike.ws.WsSocket;
 import com.scispike.ws.WebSocketTransport;
 
 public class UtilSsl {
@@ -44,7 +45,7 @@ public class UtilSsl {
   public static Socket getSocket(Callback<String, String> connected,
       final AtomicInteger failures) {
     WebSocketTransport.setSslContext(getSSLContext());
-    Socket s = new Socket(UtilSsl.HTTP_HOST, UtilSsl.getAuth(failures), connected);
+    Socket s = new WsSocket(UtilSsl.HTTP_HOST, UtilSsl.getAuth(failures), connected);
     return s;
   }
 
