@@ -100,7 +100,7 @@ public class MqttSocket implements Socket {
 	}
 
   @Override
-  public Agent build(String agent, JSONObject agentData) {
+  public Agent buildAgent(String agent, JSONObject agentData) {
     return new MqttAgent(agent, this, agentData);
   }
 

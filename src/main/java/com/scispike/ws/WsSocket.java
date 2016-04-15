@@ -101,7 +101,7 @@ public class WsSocket implements Socket {
 
 
   @Override
-  public Agent build(String agent, JSONObject agentData) {
+  public Agent buildAgent(String agent, JSONObject agentData) {
     // TODO Auto-generated method stub
     return new WsAgent(agent, this, agentData);
   }

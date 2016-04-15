@@ -17,7 +17,8 @@ public interface Socket {
 
   public abstract void subscribe(String topic,Callback<String, String> cb);
 
-  public abstract Agent build(String agent, JSONObject agentData);
+  public abstract Agent buildAgent(String agent, JSONObject agentData);
+  @Deprecated
   public abstract Agent buildAgent(String agent, String id);
 
 }

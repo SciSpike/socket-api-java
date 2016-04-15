@@ -2,12 +2,13 @@ package com.scispike.mqtt;
 
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.SSLContext;
@@ -22,6 +23,7 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.MqttPersistenceException;
 import org.eclipse.paho.client.mqttv3.MqttSecurityException;
+import org.eclipse.paho.client.mqttv3.internal.wire.MqttPublish;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
 import com.scispike.callback.Callback;
@@ -44,6 +46,13 @@ public class MqttWrapper {
   private int backoff = MIN_BACKOFF;
 
   final Timer timer = new Timer(true);
+  class PublishHolder {
+    String topic;
+    MqttMessage m;
+    Callback<String, String> cb;
+  }
+  
+  LinkedList<PublishHolder> pubs = new LinkedList<PublishHolder>();
 
   MqttWrapper(String baseURL, SSLContext sslContext, AuthFunction authFunciton,
       EventEmitter<String> emitter) {
@@ -97,6 +106,10 @@ public class MqttWrapper {
       token.waitForCompletion();
       System.out.println("Connected ;)");
       emit("socket::connected");
+      for(int i = pubs.size();i>0;i--){
+        PublishHolder pub= pubs.peekFirst();
+        doPublish(pub);
+      }
     } catch (MqttException e) {
       System.out.println("Failed to connect because;");
       e.printStackTrace();
@@ -169,8 +182,8 @@ public class MqttWrapper {
 //        subscribe.waitForCompletion();
 //      }
     } catch (MqttException e) {
-      e.printStackTrace();
-      throw new RuntimeException(e);
+      new RuntimeException(e).printStackTrace();
+      //throw new RuntimeException(e);
     }
   }
 
@@ -179,8 +192,20 @@ public class MqttWrapper {
   }
 
   public void publish(String topic, MqttMessage message, Callback<String, String> cb) {
+    PublishHolder mqttPublish = new PublishHolder();
+    mqttPublish.cb = cb;
+    mqttPublish.m = message;
+    mqttPublish.topic=topic;
+    if(socketClient.isConnected()){
+      doPublish(mqttPublish);
+    } else {
+      pubs.push(mqttPublish);
+    }
+  }
+
+  private void doPublish(PublishHolder pub) {
     try {
-      IMqttDeliveryToken publish = socketClient.publish(topic, message,null,wrapCallback(cb));
+      IMqttDeliveryToken publish = socketClient.publish(pub.topic, pub.m,null,wrapCallback(pub.cb));
 //      if(cb==null){
 //        publish.waitForCompletion();
 //      }
