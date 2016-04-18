@@ -1,6 +1,5 @@
 package com.scispike.callback;
 
-import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.LinkedHashSet;
 import java.util.Map;

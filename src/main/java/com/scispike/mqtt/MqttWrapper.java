@@ -2,7 +2,6 @@ package com.scispike.mqtt;
 
 import java.sql.Timestamp;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Set;
@@ -23,7 +22,6 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.MqttPersistenceException;
 import org.eclipse.paho.client.mqttv3.MqttSecurityException;
-import org.eclipse.paho.client.mqttv3.internal.wire.MqttPublish;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
 import com.scispike.callback.Callback;
@@ -177,10 +175,7 @@ public class MqttWrapper {
 
   public void subscribe(String topic,Callback<String, String> cb) {
     try {
-      IMqttToken subscribe = socketClient.subscribe(topic, 1,null,wrapCallback(cb));
-//      if(cb==null){
-//        subscribe.waitForCompletion();
-//      }
+      socketClient.subscribe(topic, 1,null,wrapCallback(cb));
     } catch (MqttException e) {
       new RuntimeException(e).printStackTrace();
       //throw new RuntimeException(e);
@@ -205,10 +200,7 @@ public class MqttWrapper {
 
   private void doPublish(PublishHolder pub) {
     try {
-      IMqttDeliveryToken publish = socketClient.publish(pub.topic, pub.m,null,wrapCallback(pub.cb));
-//      if(cb==null){
-//        publish.waitForCompletion();
-//      }
+      socketClient.publish(pub.topic, pub.m,null,wrapCallback(pub.cb));
     } catch (MqttPersistenceException e) {
       e.printStackTrace();
       throw new RuntimeException(e);

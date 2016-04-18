@@ -10,11 +10,9 @@ import org.junit.Test;
 
 import com.scispike.callback.Callback;
 import com.scispike.callback.Event;
-import com.scispike.callback.EventEmitter;
 import com.scispike.conversation.Agent;
 import com.scispike.conversation.Socket;
 import com.scispike.ws.test.Util;
-import com.scispike.ws.WsAgent;
 
 /*
  * Prior to running this tests you should:
@@ -30,7 +28,6 @@ public class AgentTest {
   public void testConnect(){
     final CountDownLatch signal = new CountDownLatch(1);
     Socket socket = Util.getSocket();
-    EventEmitter<String> connectEmitter = socket.getConnectEmitter();
     final Agent agent = new WsAgent("test.obj", socket, UUID.randomUUID().toString());
     agent.on("error", new Event<JSONObject>() {
       

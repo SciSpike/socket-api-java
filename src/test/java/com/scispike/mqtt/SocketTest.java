@@ -18,7 +18,6 @@ import org.junit.Test;
 
 import com.scispike.callback.Event;
 import com.scispike.callback.EventEmitter;
-import com.scispike.mqtt.MqttWrapper;
 import com.scispike.conversation.Socket;
 import com.scispike.mqtt.test.Util;
 

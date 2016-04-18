@@ -14,7 +14,6 @@ import org.json.JSONObject;
 
 public abstract class WebSocketTransport extends WebSocketClient {
   
-  private static String TAG = WebSocketTransport.class.getSimpleName();
   public WebSocketTransport(URI serverURI) {
     super(serverURI, new Draft_17());
     if(sslContext != null && this.uri.getScheme().matches("wss|https")){

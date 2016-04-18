@@ -104,6 +104,7 @@ public class MqttSocket implements Socket {
     return new MqttAgent(agent, this, agentData);
   }
 
+  @SuppressWarnings("deprecation")
   @Override
   public Agent buildAgent(String agent, String id) {
     return new MqttAgent(agent, this, id);

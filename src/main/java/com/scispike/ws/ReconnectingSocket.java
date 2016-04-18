@@ -83,9 +83,7 @@ public class ReconnectingSocket {
   }
 
   void emit(String message, String... data) {
-    int i = 0;
     for (EventEmitter<String> e : eventEmitters) {
-      i++;
       e.emit(message, data);
     }
   }
