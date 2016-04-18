@@ -29,9 +29,9 @@ import com.scispike.callback.EventEmitter;
 import com.scispike.conversation.AuthFunction;
 
 public class MqttWrapper {
-  private static final int MAX_BACKOFF = 100;
+  private static final int MAX_BACKOFF = 3000;
 
-  private static final int MIN_BACKOFF = 10000;
+  private static final int MIN_BACKOFF = 100;
 
   final Set<EventEmitter<String>> eventEmitters = new LinkedHashSet<EventEmitter<String>>();
 
@@ -114,6 +114,8 @@ public class MqttWrapper {
       if (e.getReasonCode() == MqttSecurityException.REASON_CODE_NOT_AUTHORIZED
           || e.getReasonCode() == MqttSecurityException.REASON_CODE_SERVER_CONNECT_ERROR) {
         reconnect(false);
+      } else {
+        retryReconnect(options);
       }
     }
   }
