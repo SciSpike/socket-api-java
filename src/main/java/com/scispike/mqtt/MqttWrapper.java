@@ -114,7 +114,9 @@ public class MqttWrapper {
       if (e.getReasonCode() == MqttSecurityException.REASON_CODE_NOT_AUTHORIZED
           || e.getReasonCode() == MqttSecurityException.REASON_CODE_SERVER_CONNECT_ERROR) {
         reconnect(false);
-      } else {
+      } else if(e.getReasonCode() == MqttException.REASON_CODE_CLIENT_CLOSED) {
+        //DIE
+      }else {
         retryReconnect(options);
       }
     }
@@ -242,6 +244,12 @@ public class MqttWrapper {
             || e.getReasonCode() != MqttException.REASON_CODE_CLIENT_DISCONNECTING)// already
                                                                                    // disconnected
           new RuntimeException(e).printStackTrace();
+      } finally {
+        try {
+          socketClient.close();
+        } catch (MqttException e) {
+          e.printStackTrace();
+        }
       }
     }
     eventEmitter.emit("socket::disconnected");
