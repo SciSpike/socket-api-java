@@ -1,5 +1,5 @@
 {
-    "version": "2.0.1",
+    "version": "2.0.2",
     "name": "com.scispike.socket-api",
     "cordova_name": "SocketApi",
     "description": "Handles messages to and from other service to communicate with a conversation engine",
