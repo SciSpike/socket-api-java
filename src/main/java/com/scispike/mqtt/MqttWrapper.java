@@ -116,7 +116,6 @@ public class MqttWrapper {
         reconnect(false);
       } else if(e.getReasonCode() == MqttException.REASON_CODE_CLIENT_CLOSED
           || e.getReasonCode() == MqttException.REASON_CODE_CLIENT_CONNECTED) {
-        //DIE
       }else {
         retryReconnect(options);
       }
