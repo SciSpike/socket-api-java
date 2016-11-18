@@ -114,8 +114,8 @@ public class MqttWrapper {
       if (e.getReasonCode() == MqttSecurityException.REASON_CODE_NOT_AUTHORIZED
           || e.getReasonCode() == MqttSecurityException.REASON_CODE_SERVER_CONNECT_ERROR) {
         reconnect(false);
-      } else if(e.getReasonCode() == MqttException.REASON_CODE_CLIENT_CLOSED) {
-        //DIE
+      } else if(e.getReasonCode() == MqttException.REASON_CODE_CLIENT_CLOSED
+          || e.getReasonCode() == MqttException.REASON_CODE_CLIENT_CONNECTED) {
       }else {
         retryReconnect(options);
       }
